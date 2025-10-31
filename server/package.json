@@ -16,7 +16,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.821.0",
     "@aws-sdk/s3-request-presigner": "^3.823.0",
-    "@getbrevo/brevo": "^2.0.0",
+    "@getbrevo/brevo": "^3.0.1",
     "@google-cloud/scheduler": "^5.3.0",
     "@google-cloud/speech": "^7.1.0",
     "@google-cloud/tasks": "^4.1.0",
