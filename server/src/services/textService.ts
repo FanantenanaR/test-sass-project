@@ -5,6 +5,9 @@ import { validateRequiredFields, isSuccess, handleError } from '../utils/validat
 import { createResponseWithTokens } from '../../shared/responses.js';
 import { getTextRepository } from '../../db/repositories/index.js';
 import { WORKSPACE_ROLES } from '../../../shared/types.js';
+import { databaseUrlProd, jwtWorkspaceSecret } from '../main.js';
+import { validateTextData } from '../utils/validation/textValidation.js';
+import { ERRORS, withDetails } from '../../shared/types/errors.js';
 
 /**
  * Service de gestion des textes
@@ -15,6 +18,7 @@ import { WORKSPACE_ROLES } from '../../../shared/types.js';
  * Créer un nouveau texte
  */
 export const createText = onCall({
+  secrets: [databaseUrlProd, jwtWorkspaceSecret],
   memory: '512MiB',
   timeoutSeconds: 60
 }, async (request) => {
@@ -43,17 +47,22 @@ export const createText = onCall({
     const response = createResponseWithTokens(workspace_tokens);
 
     // ✅ 4. Validation métier spécifique
-    if (content.length > 1000) {
-      return response.error({
-        code: 'INVALID_INPUT',
-        message: 'Le contenu ne peut pas dépasser 1000 caractères'
-      });
+    const trimmedContent = content.trim();
+    const trimmedTitle = title?.trim() || 'Sans titre';
+    
+    const textValidation = validateTextData({
+      content: trimmedContent,
+      title: trimmedTitle,
+      created_by: uid
+    });
+    if (!textValidation.valid) {
+      return response.error(textValidation.error!);
     }
 
     // ✅ 5. Logique métier via repository
     const textData = {
-      content: content.trim(),
-      title: title?.trim() || 'Sans titre',
+      content: trimmedContent,
+      title: trimmedTitle,
       created_by: uid
     };
     
@@ -75,6 +84,7 @@ export const createText = onCall({
  * Récupérer tous les textes d'un workspace
  */
 export const getTexts = onCall({
+  secrets: [databaseUrlProd, jwtWorkspaceSecret],
   memory: '512MiB',
   timeoutSeconds: 60
 }, async (request) => {
@@ -121,6 +131,7 @@ export const getTexts = onCall({
  * Supprimer un texte
  */
 export const deleteText = onCall({
+  secrets: [databaseUrlProd, jwtWorkspaceSecret],
   memory: '512MiB',
   timeoutSeconds: 60
 }, async (request) => {
@@ -152,10 +163,10 @@ export const deleteText = onCall({
     const deleted = await getTextRepository().delete(textId, workspace_id);
     
     if (!deleted) {
-      return response.error({
-        code: 'NOT_FOUND',
-        message: 'Texte non trouvé'
-      });
+      return response.error(withDetails(ERRORS.NOT_FOUND, {
+        message: 'Texte non trouvé',
+        textId
+      }));
     }
 
     // ✅ 6. Logging succès
