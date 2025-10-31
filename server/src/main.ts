@@ -24,6 +24,7 @@ setGlobalOptions({
 
 export const serverToken = defineSecret('SERVER_API_AGENT_TOKEN');
 export const jwtWorkspaceSecret = defineSecret('JWT_WORKSPACE_SECRET');
+export const databaseUrlProd = defineSecret('DATABASE_URL_PROD');
 
 
 export const SERVICE_URL = {

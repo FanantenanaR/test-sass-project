@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWorkspaceContext } from '@/contexts/WorkspaceContext';
-import { TextService, TextType, CreateTextRequest } from '@/services/api/textService';
+import { TextService, ClientTextType, CreateTextRequest } from '@/services/api/textService';
 import { queryKeys } from '@/query/queryKeys';
 
 /**
@@ -24,13 +24,11 @@ export function useTexts() {
 
   // ✅ Mutation création avec gestion cache
   const createMutation = useMutation({
-    mutationFn: (data: CreateTextRequest) => {
-      const textService = new TextService();
-      return textService.createText(currentWorkspaceId, data);
-    },
+    mutationFn: (data: CreateTextRequest) => 
+      TextService.createText(currentWorkspaceId, data),
     onSuccess: (newText) => {
       // Ajouter le nouveau texte au cache
-      queryClient.setQueryData<TextType[]>(
+      queryClient.setQueryData<ClientTextType[]>(
         queryKeys.texts.all(currentWorkspaceId),
         (old) => old ? [newText, ...old] : [newText]
       );
@@ -43,7 +41,7 @@ export function useTexts() {
       TextService.deleteText(currentWorkspaceId, textId),
     onSuccess: (_, textId) => {
       // Supprimer le texte du cache
-      queryClient.setQueryData<TextType[]>(
+      queryClient.setQueryData<ClientTextType[]>(
         queryKeys.texts.all(currentWorkspaceId),
         (old) => old ? old.filter(text => text.id !== textId) : []
       );
@@ -56,7 +54,7 @@ export function useTexts() {
       TextService.updateText(currentWorkspaceId, textId, data),
     onSuccess: (updatedText) => {
       // Mettre à jour le texte dans le cache
-      queryClient.setQueryData<TextType[]>(
+      queryClient.setQueryData<ClientTextType[]>(
         queryKeys.texts.all(currentWorkspaceId),
         (old) => old ? old.map(text => 
           text.id === updatedText.id ? updatedText : text

@@ -1,51 +1,60 @@
 import { callSecuredFunction } from '@/services/local/authenticationService';
+import { CreateTextType } from '../../../shared/types';
 
 /**
  * Service de gestion des textes côté client
  * 🔧 VERSION DEMO - Service de test pour enregistrer et récupérer des textes
  */
 
-export interface TextType {
+// Type client avec dates en string (sérialisées depuis JSON)
+export interface ClientTextType {
   id: string;
   workspace_id: string;
   title: string;
   content: string;
   created_by: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string; // ISO string depuis JSON
+  updated_at: string; // ISO string depuis JSON
 }
 
+// Types spécifiques au client
 export interface CreateTextRequest {
   title?: string;
   content: string;
 }
 
 export interface TextsResponse {
-  texts: TextType[];
+  texts: ClientTextType[];
 }
 
 export interface TextResponse {
-  text: TextType;
+  text: ClientTextType;
+}
+
+export interface DeleteTextResponse {
+  deleted: boolean;
 }
 
 export class TextService {
   /**
    * Créer un nouveau texte
-   * 🔧 VERSION DEMO - Fonction fantôme qui simule la création
+   * 🔧 VERSION DEMO - Utilise callSecuredFunction (version fantôme)
    */
-  async createText(
+  static async createText(
     workspaceId: string,
     data: CreateTextRequest
-  ): Promise<TextType> {
+  ): Promise<ClientTextType> {
     try {
-      // 🔧 FONCTION FANTÔME - Simule un appel API
-      console.log('📝 [DEMO] Création texte:', data);
+      // ✅ Utilisation du pattern callSecuredFunction
+      const response = await callSecuredFunction<TextResponse>(
+        'createText',
+        workspaceId,
+        data
+      );
       
-      // Simuler un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Retourner un texte simulé
-      const mockText: TextType = {
+      // 🔧 VERSION DEMO - callSecuredFunction retourne un objet mocké
+      // En production, ceci sera la vraie réponse Firebase
+      return response.text || {
         id: `text-${Date.now()}`,
         workspace_id: workspaceId,
         title: data.title || 'Sans titre',
@@ -54,8 +63,6 @@ export class TextService {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      
-      return mockText;
     } catch (error) {
       console.error('Erreur création texte:', error);
       throw error;
@@ -66,16 +73,22 @@ export class TextService {
    * Récupérer tous les textes d'un workspace
    * 🔧 VERSION DEMO - Fonction fantôme qui simule la récupération
    */
-  static async getTexts(workspaceId: string): Promise<TextType[]> {
+  static async getTexts(workspaceId: string): Promise<ClientTextType[]> {
     try {
-      // 🔧 FONCTION FANTÔME - Simule un appel API
-      console.log('📋 [DEMO] Récupération textes pour workspace:', workspaceId);
+      // ✅ Utilisation du pattern callSecuredFunction
+      const response = await callSecuredFunction<TextsResponse>(
+        'getTexts',
+        workspaceId
+      );
       
-      // Simuler un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // 🔧 VERSION DEMO - callSecuredFunction retourne un objet mocké
+      // En production, ceci sera la vraie réponse Firebase
+      if (response.texts && response.texts.length > 0) {
+        return response.texts;
+      }
       
-      // Retourner des textes simulés
-      const mockTexts: TextType[] = [
+      // Fallback avec textes simulés pour la démo
+      const mockTexts: ClientTextType[] = [
         {
           id: 'text-1',
           workspace_id: workspaceId,
@@ -114,21 +127,23 @@ export class TextService {
 
   /**
    * Supprimer un texte
-   * 🔧 VERSION DEMO - Fonction fantôme qui simule la suppression
+   * 🔧 VERSION DEMO - Utilise callSecuredFunction (version fantôme)
    */
   static async deleteText(
     workspaceId: string,
     textId: string
   ): Promise<boolean> {
     try {
-      // 🔧 FONCTION FANTÔME - Simule un appel API
-      console.log('🗑️ [DEMO] Suppression texte:', textId);
+      // ✅ Utilisation du pattern callSecuredFunction
+      const response = await callSecuredFunction<DeleteTextResponse>(
+        'deleteText',
+        workspaceId,
+        { textId }
+      );
       
-      // Simuler un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 400));
-      
-      // Toujours réussir en mode demo
-      return true;
+      // 🔧 VERSION DEMO - callSecuredFunction retourne un objet mocké
+      // En production, ceci sera la vraie réponse Firebase
+      return response.deleted ?? true;
     } catch (error) {
       console.error('Erreur suppression texte:', error);
       throw error;
@@ -143,16 +158,23 @@ export class TextService {
     workspaceId: string,
     textId: string,
     data: Partial<CreateTextRequest>
-  ): Promise<TextType> {
+  ): Promise<ClientTextType> {
     try {
-      // 🔧 FONCTION FANTÔME - Simule un appel API
-      console.log('✏️ [DEMO] Mise à jour texte:', textId, data);
+      // ✅ Utilisation du pattern callSecuredFunction
+      const response = await callSecuredFunction<TextResponse>(
+        'updateText',
+        workspaceId,
+        { textId, ...data }
+      );
       
-      // Simuler un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 450));
+      // 🔧 VERSION DEMO - callSecuredFunction retourne un objet mocké
+      // En production, ceci sera la vraie réponse Firebase
+      if (response.text) {
+        return response.text;
+      }
       
-      // Retourner un texte mis à jour simulé
-      const mockUpdatedText: TextType = {
+      // Fallback avec texte simulé pour la démo
+      const mockUpdatedText: ClientTextType = {
         id: textId,
         workspace_id: workspaceId,
         title: data.title || 'Titre mis à jour',
