@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build --experimental-build-mode", 
+    "build": "next build --experimental-build-mode",
     "start": "next start",
     "lint": "next lint --strict"
   },
@@ -48,6 +48,7 @@
   "devDependencies": {
     "@eslint/js": "^9.25.0",
     "@next/eslint-plugin-next": "^15.3.1",
+    "@tailwindcss/postcss": "^4.1.16",
     "@types/crypto-js": "^4.2.2",
     "@types/firebase": "^2.4.32",
     "@types/node": "^20.19.11",
@@ -55,13 +56,13 @@
     "@types/react-dom": "^19.1.6",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
-    "autoprefixer": "^10.4.16",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.3.1",
     "globals": "^16.0.0",
     "ignore-loader": "^0.1.2",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.4.17",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
     "typescript": "^5.8.3"
   }
 }

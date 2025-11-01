@@ -1,29 +1,30 @@
-export * from './services/oauthService';
-export * from './utils/authWorkspace';
-export * from './services/documentService';
-export * from './services/profileService';
-export * from './services/sessionService';
+// ✅ Exports des services existants
 export * from './services/textService';
-export * from './services/customAgentService';
-export * from './services/workspaceService';
-export * from './services/imageGenerationService';
-export * from './services/speechToTextService';
-export * from './utils/wasabiStorage';
-export * from './services/automationService';
-export * from './utils/messageAutomation';
-export * from './services/stripeWebhookService';
-export * from './services/campaignService';
-export * from './services/temporaryFileService';
-export * from './services/replyCommentService.js';
-export * from './services/leadService';
-export * from './services/customAgentNotificationService';
-//export * from './services/devService';
+export * from './services/commentService';
 
-export * from './routes/customAgent';
-export * from './routes/file';
-export * from './routes/oauth';
-export * from "./routes/webhooks";
-//export * from './routes/debug';
-export * from './triggers/auth';
-export * from './triggers/socialScheduler';
+// ✅ Exports explicites des utilitaires authWorkspace (priorité)
+export {
+  // Types et enums
+  WorkspaceTokenState,
+  WORKSPACE_TOKEN_STATE,
+  WorkspaceToken,
+  WorkspaceTokenMap,
+  WorkspaceTokenValidation,
+  // Fonctions
+  verifyWorkspaceToken,
+  isValidWorkspaceToken,
+  hasRequiredRole,
+  generateWorkspaceTokens,
+  validateIdToken,
+  refreshWorkspaceToken,
+  validateAuth
+} from './utils/authWorkspace';
+
+// ✅ Exports explicites des utilitaires validation (non conflictuels seulement)
+export {
+  validateRequiredFields,
+  validateOptionalHexColor,
+  validateEmail,
+  validatePhone
+} from './utils/validation';
 

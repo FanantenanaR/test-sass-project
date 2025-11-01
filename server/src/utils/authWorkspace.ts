@@ -54,52 +54,119 @@ export interface WorkspaceTokenValidation {
   role?: WorkspaceRole;
 }
 
-// ========================== DONNÉES FANTÔMES ==========================
+// ========================== DONNÉES STATIQUES (synchronisées avec PostgreSQL) ==========================
 
+// ✅ Mapping tokens → UUIDs workspaces depuis la base de données
 const MOCK_WORKSPACE_TOKENS: WorkspaceTokenMap = {
-  'demo-workspace-123': {
+  // ✅ UUID du Workspace Demo depuis la base de données
+  '550e8400-e29b-41d4-a716-446655440000': {
     role: WORKSPACE_ROLES.ADMIN,
     token: 'demo-token-workspace-123'
   },
-  'demo-workspace-456': {
+  // ✅ UUID du Test Workspace depuis la base de données
+  '550e8400-e29b-41d4-a716-446655440001': {
     role: WORKSPACE_ROLES.EDITOR,
     token: 'demo-token-workspace-456'
   }
+};
+
+// ✅ Mapping inverse : token → workspace UUID
+const TOKEN_TO_WORKSPACE_MAP: Record<string, string> = {
+  'demo-token-workspace-123': '550e8400-e29b-41d4-a716-446655440000',
+  'demo-token-workspace-456': '550e8400-e29b-41d4-a716-446655440001'
 };
 
 // ========================== FONCTIONS FANTÔMES ==========================
 
 /**
  * Vérifie un token workspace
- * 🔧 VERSION DEMO - TOUJOURS OK sans vérification
+ * 🔧 VERSION DEMO - Validation statique avec UUIDs de la BDD
  */
 export async function verifyWorkspaceToken(
   workspaceToken: string | null,
   uid: string,
   requiredRole?: WorkspaceRole
 ): Promise<WorkspaceTokenValidation> {
-  // 🔧 FONCTION VIDE - Toujours retourner VALID
+  // 🔧 Validation statique : vérifier si le token correspond aux tokens mockés
+  if (!workspaceToken) {
+    return {
+      state: WorkspaceTokenState.WORKSPACE_TOKEN_NULL,
+      workspace_id: undefined,
+      workspace_tokens: undefined,
+      role: undefined
+    };
+  }
+
+  // ✅ Trouver le workspace_id UUID correspondant au token
+  const workspace_id = TOKEN_TO_WORKSPACE_MAP[workspaceToken];
+  
+  if (!workspace_id) {
+    // Token non trouvé, mais on accepte quand même en mode démo (fallback)
+    return {
+      state: WorkspaceTokenState.VALID,
+      workspace_id: '550e8400-e29b-41d4-a716-446655440000', // ✅ UUID du Workspace Demo par défaut
+      workspace_tokens: MOCK_WORKSPACE_TOKENS,
+      role: WORKSPACE_ROLES.ADMIN
+    };
+  }
+
+  // ✅ Récupérer les données du token depuis MOCK_WORKSPACE_TOKENS
+  const tokenData = MOCK_WORKSPACE_TOKENS[workspace_id];
+  
+  if (!tokenData) {
+    // Workspace ID trouvé mais pas de données token (ne devrait pas arriver)
+    return {
+      state: WorkspaceTokenState.VALID,
+      workspace_id: '550e8400-e29b-41d4-a716-446655440000',
+      workspace_tokens: MOCK_WORKSPACE_TOKENS,
+      role: WORKSPACE_ROLES.ADMIN
+    };
+  }
+
+  // ✅ Vérifier le rôle requis (si spécifié)
+  if (requiredRole) {
+    const userRole = tokenData.role;
+    if (!hasRequiredRole(userRole, requiredRole)) {
+      return {
+        state: WorkspaceTokenState.ROLE_NOT_ALLOWED,
+        workspace_id: undefined,
+        workspace_tokens: undefined,
+        role: userRole
+      };
+    }
+  }
+  
   return {
     state: WorkspaceTokenState.VALID,
-    workspace_id: 'demo-workspace-123',
+    workspace_id: workspace_id, // ✅ UUID depuis la BDD
     workspace_tokens: MOCK_WORKSPACE_TOKENS,
-    role: WORKSPACE_ROLES.ADMIN
+    role: tokenData.role
   };
 }
 
 /**
  * Valide le résultat de la vérification du token workspace
- * 🔧 VERSION DEMO - TOUJOURS SUCCESS
+ * 🔧 VERSION DEMO - Retourne UUIDs de la BDD
  */
 export function isValidWorkspaceToken(validation: WorkspaceTokenValidation): Response<{
   workspace_id: string;
   workspace_tokens: WorkspaceTokenMap;
   role: WorkspaceRole;
 }> {
-  // 🔧 FONCTION VIDE - Toujours retourner success
+  // ✅ Retourner avec le workspace_id depuis la validation (UUID de la BDD)
+  if (validation.state === WorkspaceTokenState.VALID && validation.workspace_id) {
+    return {
+      success: true,
+      workspace_id: validation.workspace_id, // ✅ UUID depuis verifyWorkspaceToken
+      workspace_tokens: validation.workspace_tokens || MOCK_WORKSPACE_TOKENS,
+      role: validation.role || WORKSPACE_ROLES.ADMIN
+    };
+  }
+  
+  // Fallback si pas de workspace_id (ne devrait pas arriver en mode démo)
   return {
     success: true,
-    workspace_id: 'demo-workspace-123',
+    workspace_id: '550e8400-e29b-41d4-a716-446655440000', // ✅ UUID du Workspace Demo par défaut
     workspace_tokens: MOCK_WORKSPACE_TOKENS,
     role: WORKSPACE_ROLES.ADMIN
   };

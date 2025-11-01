@@ -2,12 +2,16 @@
   "name": "server",
   "scripts": {
     "lint": "exit 0",
-    "build": "tsc --noEmit --strict && echo 'Build TypeScript check'",
-    "build:watch": "echo 'Build watch simulé' && exit 0",
-    "shell": "echo 'Shell simulé' && exit 0",
-    "start": "echo 'Start simulé' && exit 0",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf lib",
+    "shell": "firebase functions:shell",
+    "start": "firebase emulators:start --only functions",
+    "serve": "firebase emulators:start --only functions",
     "deploy": "bash ../scripts/deploy.sh",
-    "dev": "bash ../scripts/deploy.sh"
+    "deploy:local": "bash ../scripts/deploy.sh local",
+    "deploy:prod": "bash ../scripts/deploy.sh prod",
+    "dev": "bash ../scripts/deploy.sh local"
   },
   "engines": {
     "node": "22"
@@ -16,7 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.821.0",
     "@aws-sdk/s3-request-presigner": "^3.823.0",
-    "@getbrevo/brevo": "^2.0.0",
+    "@getbrevo/brevo": "^3.0.1",
     "@google-cloud/scheduler": "^5.3.0",
     "@google-cloud/speech": "^7.1.0",
     "@google-cloud/tasks": "^4.1.0",

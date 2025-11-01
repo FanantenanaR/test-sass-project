@@ -54,3 +54,4 @@ client/.env.sentry-build-plugin
 
 # Logs
 *.log
+client/package-lock.json

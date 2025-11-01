@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import ProtectedLayout from './protected-layout';
+// import ProtectedLayout from './protected-layout';
 import { WorkspaceProvider } from '@/contexts/WorkspaceContext';
 import { ChatParamsProvider } from '@/contexts/ChatParamsContext';
 
@@ -12,7 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedLayout>
+    // <ProtectedLayout>
       <WorkspaceProvider>
         <ChatParamsProvider>
           <div className="min-h-screen bg-white">
@@ -20,6 +20,6 @@ export default function DashboardLayout({
           </div>
         </ChatParamsProvider>
       </WorkspaceProvider>
-    </ProtectedLayout>
+    // </ProtectedLayout>
   );
 }
