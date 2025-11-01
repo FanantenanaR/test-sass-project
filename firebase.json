@@ -57,7 +57,8 @@
   "emulators": {
     "functions": {
       "port": 5001,
-      "host": "127.0.0.1"
+      "host": "127.0.0.1",
+      "cors": true
     },
     "firestore": {
       "port": 8081

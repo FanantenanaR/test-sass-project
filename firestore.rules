@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rules par défaut pour mode développement
+    // En développement, on peut permettre l'accès (mode démo)
+    match /{document=**} {
+      allow read, write: if true; // ⚠️ Mode démo - à restreindre en production
+    }
+  }
+}
