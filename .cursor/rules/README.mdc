@@ -1,9 +1,6 @@
 ---
-description: Guide d'utilisation du système de règles du projet
-globs: ["**/*"]
-alwaysApply: false
+alwaysApply: true
 ---
-
 # 📋 SYSTÈME DE RÈGLES CONDENSÉ
 
 ## 🎯 Comment utiliser ce système
