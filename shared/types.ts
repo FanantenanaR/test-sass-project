@@ -84,3 +84,41 @@ export interface Employee {
   hexColor: string;
   description: string;
 }
+
+// ========================== TYPES USER ==============================
+
+export interface User {
+  id: string;
+  name: string;
+  profilePhotoUrl?: string | null;
+}
+
+// ========================== TYPES COMMENT ==============================
+
+export interface CommentType {
+  id: string;
+  workspace_id: string;
+  user_id: string;
+  user: User;
+  content: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CreateCommentType {
+  content: string;
+  user_id: string;
+}
+
+export interface UpdateCommentType {
+  content: string;
+}
+
+// Enum pour le tri des commentaires
+export enum CommentSortOrder {
+  NEWEST = 'newest',
+  OLDEST = 'oldest'
+}
+
+// Constante pour la pagination
+export const COMMENTS_PER_PAGE = 20;

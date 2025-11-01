@@ -1,5 +1,6 @@
 // ✅ Exports des services existants
 export * from './services/textService';
+export * from './services/commentService';
 
 // ✅ Exports explicites des utilitaires authWorkspace (priorité)
 export {
